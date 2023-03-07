@@ -1,8 +1,10 @@
 package com.example.projektsolceller;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -34,11 +36,11 @@ public class HelloApplication extends Application {
         File file = new File("Solcelle_data.tsv");
         solceller.loadFile(file);
 
-        borderPane.setLayoutX(600);
-        borderPane.setLayoutY(300);
+        borderPane.setLayoutX(525);
+        borderPane.setLayoutY(250);
         login.getChildren().add(borderPane);
-        borderPane.setPrefHeight(200);
-        borderPane.setPrefWidth(200);
+        borderPane.setPrefHeight(300);
+        borderPane.setPrefWidth(300);
         borderPane.setCenter(gridPane);
         gridPane.setPrefHeight(200);
         gridPane.setPrefWidth(200);
@@ -46,6 +48,16 @@ public class HelloApplication extends Application {
         gridPane.add(username, 0,0);
         gridPane.add(password,0,1);
         gridPane.add(loginBtn,0,2);
+        loginBtn.setOnAction(e -> {
+            if (username.getText().equals("admin") && password.getText().equals("admin")) {
+                Scene scene2 = new Scene(mainScreen, 1200, 600);
+                stage.setScene(scene2);
+            }
+            else {
+                Label error = new Label("Wrong username or password");
+                gridPane.add(error, 0, 3);
+            }
+        });
 
 
 
