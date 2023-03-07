@@ -49,7 +49,7 @@ public class HelloApplication extends Application {
         gridPane.add(password,0,1);
         gridPane.add(loginBtn,0,2);
         loginBtn.setOnAction(e -> {
-            if (username.getText().equals("admin") && password.getText().equals("admin")) {
+            if (username.getText().equals("medarbejder") && password.getText().equals("medarbejder")) {
                 Scene scene2 = new Scene(mainScreen, 1200, 600);
                 stage.setScene(scene2);
             }
