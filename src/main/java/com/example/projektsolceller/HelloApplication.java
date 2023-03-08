@@ -129,7 +129,7 @@ public class HelloApplication extends Application {
         mainPane.setPrefWidth(1000);
         mainPane.setLeft(leftVbox);
         leftVbox.getChildren().addAll(choiceChartBox, labelDay,cbDay,cbMonth, cbYear,labelSite,cbSite,lowestProduction,searchBtn);
-        leftVbox.setPadding(new Insets(45));
+        leftVbox.setPadding(new Insets(35));
         leftVbox.setSpacing(15);
         leftVbox.setPrefWidth(300);
 

@@ -10,6 +10,18 @@
 
 }
 
+.choice-box-base > .arrow-button > .arrow {
+    -fx-background-color: white;
+    -fx-text-fill: #FFFFFF;
+}
+
+
+
+.choice-box {
+    -fx-background-color:  #a1acb9;
+
+}
+
 .button {
     -fx-background-color:  #f3612d;
     -fx-text-fill: #FFFFFF;
