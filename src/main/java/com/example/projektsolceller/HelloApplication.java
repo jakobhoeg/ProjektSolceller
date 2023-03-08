@@ -92,7 +92,7 @@ public class HelloApplication extends Application {
 
         // Skips login
         //changeToMainScene();
-        loginBtn.getStyleClass().add("login-button");
+        loginBtn.setPrefWidth(180);
         password.setOnAction(actionEvent -> {
             loginBtn.fire();
         });
