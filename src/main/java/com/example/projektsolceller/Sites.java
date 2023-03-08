@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
     public class Sites {
 
-
     private String timeDate;
     private String timeInHours;
     private String _id;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
     private String total;
     private String online;
     private String offline;
-
 
     public ArrayList<com.example.projektsolceller.Sites> Data = new ArrayList<>();
 
@@ -73,7 +71,6 @@ import java.util.ArrayList;
                     + Data.get(i).getTotal() + "\t" + Data.get(i).getOnline() + "\t" + Data.get(i).getOffline());
         }
     }
-
 
     // region Getters and Setters
     public String getTimeDate() {
