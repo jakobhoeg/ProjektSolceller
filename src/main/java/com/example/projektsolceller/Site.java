@@ -4,11 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
-public class Sites {
+public class Site {
 
     private String timeDate;
     private String timeInHours;
@@ -19,9 +16,9 @@ public class Sites {
     private String online;
     private String offline;
 
-    public ArrayList<com.example.projektsolceller.Sites> Data = new ArrayList<>();
+    public ArrayList<Site> Data = new ArrayList<>();
 
-    public Sites(String _id, String timeDate, String timeInHours, String sid, String total, String online, String offline) {
+    public Site(String _id, String timeDate, String timeInHours, String sid, String total, String online, String offline) {
         this._id = _id;
         this.timeDate = timeDate;
         this.timeInHours = timeInHours;
@@ -31,10 +28,10 @@ public class Sites {
         this.offline = offline;
     }
 
-    public Sites() {
+    public Site() {
     }
 
-    public ArrayList<com.example.projektsolceller.Sites> loadFile(File file) {
+    public ArrayList<Site> loadFile(File file) {
 
         try (BufferedReader TSVReader = new BufferedReader(new FileReader(file))) {
             String line = null;
@@ -51,14 +48,14 @@ public class Sites {
                     if (time.charAt(j) == 'T')
                     {
                         timeDate = time.substring(0, j);
-                        timeInHours = time.substring(j + 1,j+6);
+                        timeInHours = time.substring(j + 1, j + 6);
                     }
                 }
                 sid = values[2];
                 total = values[3];
                 online = values[4];
                 offline = values[5];
-                Data.add(new com.example.projektsolceller.Sites(_id, timeDate, timeInHours, sid, total, online, offline));
+                Data.add(new Site(_id, timeDate, timeInHours, sid, total, online, offline));
 
             }
         } catch (Exception e) {
@@ -108,7 +105,7 @@ public class Sites {
         return offline;
     }
 
-    public ArrayList<com.example.projektsolceller.Sites> getData() {
+    public ArrayList<Site> getData() {
         return Data;
     }
     // endregion

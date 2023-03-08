@@ -1,25 +1,23 @@
 package com.example.projektsolceller;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class HelloApplication extends Application {
 
-    Sites solceller = new Sites();
+    Site solceller = new Site();
+
 
     // Login Scene
     Pane loginPane = new Pane();
@@ -30,18 +28,19 @@ public class HelloApplication extends Application {
     TextField username = new TextField("");
     TextField password = new TextField("");
     Button loginBtn = new Button("Login");
-    Label loginLabel = new Label("Please enter username and password to login");
+    Label loginLabel = new Label("Aarhus Solcelleanlæg");
 
     Stage temporaryStage = null;
     Scene loginScene = new Scene(loginPane, 600, 500);
 
 
     // Main scene
-    Scene mainScene = new Scene(mainScreen, 1200, 600);
+    Scene mainScene = new Scene(mainScreen, 1000, 600);
     BorderPane mainPane = new BorderPane();
     VBox leftVbox = new VBox();
     Pane chartPane = new Pane();
     BarChart<String, Number> barChart = new BarChart<>(new CategoryAxis(), new NumberAxis());
+
 
     Label labelDay = new Label("Undlad at vælge dag, for at se data for hele måneden");
     Label labelSite = new Label("Undlad at vælge site, for at se den samlede produktion for alle sites i den valgte måned");
@@ -54,9 +53,11 @@ public class HelloApplication extends Application {
     Button searchBtn = new Button("Søg");
 
 
+
     @Override
     public void start(Stage stage) throws IOException {
         temporaryStage = stage;
+        loginScene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
         solceller.loadFile(file);
 
@@ -68,14 +69,15 @@ public class HelloApplication extends Application {
         password.setPromptText("Kodeord");
         loginPane.requestFocus();
 
-        borderPane.setLayoutX(225);
+        borderPane.setLayoutX(210);
         borderPane.setLayoutY(200);
         loginPane.getChildren().add(borderPane);
 
 
         loginPane.getChildren().add(loginLabel);
-        loginLabel.setLayoutY(140);
-        loginLabel.setLayoutX(200);
+        loginLabel.setLayoutY(160);
+        loginLabel.setLayoutX(225);
+        loginLabel.getStyleClass().add("login-label");
         borderPane.setPrefHeight(600);
         borderPane.setPrefWidth(500);
         borderPane.setCenter(gridPane);
@@ -89,8 +91,8 @@ public class HelloApplication extends Application {
         gridPane.add(loginBtn,0,2);
 
         // Skips login
-        changeToMainScene();
-
+        //changeToMainScene();
+        loginBtn.getStyleClass().add("login-button");
         password.setOnAction(actionEvent -> {
             loginBtn.fire();
         });
@@ -115,12 +117,14 @@ public class HelloApplication extends Application {
         temporaryStage.setTitle("Aarhus Solcelleanlæg");
         temporaryStage.setScene(mainScene);
         temporaryStage.centerOnScreen();
+        mainScene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
         mainScreen.getChildren().add(mainPane);
         chartPane.getChildren().add(barChart);
+        barChart.setLayoutY(30);
         barChart.setPrefSize(700, 550);
         mainPane.setPrefHeight(600);
-        mainPane.setPrefWidth(1200);
+        mainPane.setPrefWidth(1000);
         mainPane.setLeft(leftVbox);
         leftVbox.getChildren().addAll(labelDay,cbDay,cbMonth, cbYear,labelSite,cbSite,lowestProduction,searchBtn);
         leftVbox.setPadding(new Insets(50));
@@ -139,6 +143,8 @@ public class HelloApplication extends Application {
         cbSite.setEditable(true);
         cbSite.setPromptText("Site ID");
         cbSite.setPrefWidth(120);
+        searchBtn.setPrefWidth(120);
+
 
         searchBtn.setOnAction(actionEvent -> {
             drawBarChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
@@ -150,7 +156,7 @@ public class HelloApplication extends Application {
 
         mainPane.setRight(chartPane);
 
-        for (Sites s : solceller.Data) {
+        for (Site s : solceller.Data) {
             if (s == solceller.Data.get(0)) {
                 continue;
             }
@@ -195,7 +201,10 @@ public class HelloApplication extends Application {
         barChart.getData().clear();
         chartPane.getChildren().clear();
         String date = year + "-" + month + "-" + day;
-        barChart.setTitle("Produktion i kWh for " + date + " for solcelle site " + sid);
+        barChart.setTitle("Produktion i kWh pr. time for " + date + " for solcelle site " + sid);
+        barChart.getXAxis().setLabel("Klokkeslæt");
+        barChart.getYAxis().setLabel("Produktion i kWh");
+        barChart.setLayoutY(30);
         barChart.setPrefSize(700, 550);
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Online");
@@ -224,4 +233,9 @@ public class HelloApplication extends Application {
             });
         }
     }
+
+
+
+
 }
+
