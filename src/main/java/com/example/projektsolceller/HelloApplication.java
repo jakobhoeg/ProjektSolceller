@@ -49,6 +49,7 @@ public class HelloApplication extends Application {
     ComboBox<String> cbMonth = new ComboBox<>();
     ComboBox<String> cbDay = new ComboBox<>();
     CheckBox lowestProduction = new CheckBox("Vis laveste produktion");
+    ChoiceBox<String> choiceChartBox = new ChoiceBox<>();
 
     Button searchBtn = new Button("Søg");
 
@@ -92,6 +93,7 @@ public class HelloApplication extends Application {
 
         // Skips login
         //changeToMainScene();
+
         loginBtn.setPrefWidth(180);
         password.setOnAction(actionEvent -> {
             loginBtn.fire();
@@ -99,7 +101,6 @@ public class HelloApplication extends Application {
         loginBtn.setOnAction(e -> {
             if (username.getText().equals("m") && password.getText().equals("m")) {
                 changeToMainScene();
-
             }
             else {
                 Label error = new Label("Wrong username or password");
@@ -119,6 +120,7 @@ public class HelloApplication extends Application {
         temporaryStage.centerOnScreen();
         mainScene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
+        mainScreen.requestFocus();
         mainScreen.getChildren().add(mainPane);
         chartPane.getChildren().add(barChart);
         barChart.setLayoutY(30);
@@ -126,13 +128,15 @@ public class HelloApplication extends Application {
         mainPane.setPrefHeight(600);
         mainPane.setPrefWidth(1000);
         mainPane.setLeft(leftVbox);
-        leftVbox.getChildren().addAll(labelDay,cbDay,cbMonth, cbYear,labelSite,cbSite,lowestProduction,searchBtn);
+        leftVbox.getChildren().addAll(choiceChartBox, labelDay,cbDay,cbMonth, cbYear,labelSite,cbSite,lowestProduction,searchBtn);
         leftVbox.setPadding(new Insets(45));
         leftVbox.setSpacing(15);
         leftVbox.setPrefWidth(300);
 
         labelDay.setWrapText(true);
         labelSite.setWrapText(true);
+
+
         cbDay.setPromptText("Dag");
         cbDay.setPrefWidth(120);
         cbMonth.setPromptText("Måned");
@@ -145,10 +149,26 @@ public class HelloApplication extends Application {
         cbSite.setPrefWidth(120);
         searchBtn.setPrefWidth(120);
 
+        choiceChartBox.getItems().addAll("Bar chart", "Line chart");
+        choiceChartBox.setValue("Bar chart");
+        choiceChartBox.setOnAction(e -> {
+            if (choiceChartBox.getValue().equals("Bar chart")) {
+                drawBarChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
+                        cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem());
+            } else if (choiceChartBox.getValue().equals("Line chart")) {
+                drawLineChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
+                        cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem());
+            }
+        });
 
         searchBtn.setOnAction(actionEvent -> {
-            drawBarChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
-                    cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem());
+            if (choiceChartBox.getValue().equals("Bar chart")) {
+                drawBarChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
+                        cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem());
+            } else if (choiceChartBox.getValue().equals("Line chart")) {
+                drawLineChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
+                        cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem());
+            }
         });
 
 
@@ -219,6 +239,43 @@ public class HelloApplication extends Application {
 
         // Klik på en bar og få tallet vist
 
+        for (XYChart.Data<String, Number> item : series.getData()) {
+            // Vis tallet ved at holde musen inde
+            item.getNode().setOnMousePressed((MouseEvent event) -> {
+                Tooltip tooltip = new Tooltip(item.getYValue().toString());
+                Tooltip.install(item.getNode(), tooltip);
+                tooltip.show(item.getNode(), event.getScreenX(), event.getScreenY());
+                // Hide tooltip når man slipper musen
+                item.getNode().setOnMouseReleased((MouseEvent e) -> {
+                    Tooltip.uninstall(item.getNode(), tooltip);
+                    tooltip.hide();
+                });
+            });
+        }
+    }
+
+    public void drawLineChart(String sid, String day, String month, String year) {
+        LineChart<String, Number> lineChart = new LineChart<>(new CategoryAxis(), new NumberAxis());
+        lineChart.getData().clear();
+        chartPane.getChildren().clear();
+        String date = year + "-" + month + "-" + day;
+        lineChart.setTitle("Produktion i kWh pr. time for " + date + " for solcelle site " + sid);
+        lineChart.getXAxis().setLabel("Klokkeslæt");
+        lineChart.getYAxis().setLabel("Produktion i kWh");
+        lineChart.setLayoutY(30);
+        lineChart.setPrefSize(700, 550);
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Online");
+        for (int i = 1; i < solceller.Data.size(); i++) {
+            if (solceller.Data.get(i).getSid().equals(String.valueOf(sid)) && solceller.Data.get(i).getTimeDate().equals(date)) {
+                int online = Integer.parseInt(solceller.Data.get(i).getOnline());
+                series.getData().add(new XYChart.Data<>(solceller.Data.get(i).getTimeInHours(), online));
+            }
+        }
+        lineChart.getData().add(series);
+        chartPane.getChildren().add(lineChart);
+
+        // Klik på en bar og få tallet vist
         for (XYChart.Data<String, Number> item : series.getData()) {
             // Vis tallet ved at holde musen inde
             item.getNode().setOnMousePressed((MouseEvent event) -> {
