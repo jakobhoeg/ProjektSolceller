@@ -1,19 +1,21 @@
 package com.example.projektsolceller;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class HelloApplication extends Application {
 
@@ -37,9 +39,19 @@ public class HelloApplication extends Application {
     // Main scene
     Scene mainScene = new Scene(mainScreen, 1200, 600);
     BorderPane mainPane = new BorderPane();
+    VBox leftVbox = new VBox();
     Pane chartPane = new Pane();
-    ComboBox<String> cbYear = new ComboBox<>();
+    BarChart<String, Number> barChart = new BarChart<>(new CategoryAxis(), new NumberAxis());
 
+    Label labelDay = new Label("Undlad at vælge dag, for at se data for hele måneden");
+    Label labelSite = new Label("Undlad at vælge site, for at se den samlede produktion for alle sites i den valgte måned");
+    ComboBox<String> cbSite = new ComboBox<>();
+    ComboBox<String> cbYear = new ComboBox<>();
+    ComboBox<String> cbMonth = new ComboBox<>();
+    ComboBox<String> cbDay = new ComboBox<>();
+    CheckBox lowestProduction = new CheckBox("Vis laveste produktion");
+
+    Button searchBtn = new Button("Søg");
 
 
     @Override
@@ -52,8 +64,8 @@ public class HelloApplication extends Application {
         stage.setScene(loginScene);
         stage.show();
 
-        username.setPromptText("Username");
-        password.setPromptText("Password");
+        username.setPromptText("Brugernavn");
+        password.setPromptText("Kodeord");
         loginPane.requestFocus();
 
         borderPane.setLayoutX(225);
@@ -105,35 +117,84 @@ public class HelloApplication extends Application {
         temporaryStage.centerOnScreen();
 
         mainScreen.getChildren().add(mainPane);
+        chartPane.getChildren().add(barChart);
+        barChart.setPrefSize(700, 550);
         mainPane.setPrefHeight(600);
         mainPane.setPrefWidth(1200);
+        mainPane.setLeft(leftVbox);
+        leftVbox.getChildren().addAll(labelDay,cbDay,cbMonth, cbYear,labelSite,cbSite,lowestProduction,searchBtn);
+        leftVbox.setPadding(new Insets(50));
+        leftVbox.setSpacing(15);
+        leftVbox.setPrefWidth(300);
 
-        mainPane.setLeft(cbYear);
+        labelDay.setWrapText(true);
+        labelSite.setWrapText(true);
+        cbDay.setPromptText("Dag");
+        cbDay.setPrefWidth(120);
+        cbMonth.setPromptText("Måned");
+        cbMonth.setPrefWidth(120);
+        cbYear.setPromptText("År");
+        cbYear.setPrefWidth(120);
+
+        cbSite.setEditable(true);
+        cbSite.setPromptText("Site ID");
+        cbSite.setPrefWidth(120);
+
+        searchBtn.setOnAction(actionEvent -> {
+            drawBarChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
+                    cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem());
+        });
+
+
+
+
         mainPane.setRight(chartPane);
 
-        for (int i = 1; i < solceller.Data.size(); i++) {
-            if (!solceller.Data.get(i).getTimeDate().contains("2023"))
+        for (Sites s : solceller.Data) {
+            if (s == solceller.Data.get(0)) {
+                continue;
+            }
+            if (!cbSite.getItems().contains(s.getSid()))
             {
-                cbYear.getItems().add(solceller.Data.get(i).getTimeDate().substring(0,4));
+                cbSite.getItems().add(s.getSid());
+            }
+        }
+
+        for (int i = 1; i <= 31; i++) {
+            if (i < 10)
+            {
+                cbDay.getItems().add("0"+String.valueOf(i));
+            }
+            else {
+                cbDay.getItems().add(String.valueOf(i));
             }
 
         }
 
+        for (int i = 1; i <= 12; i++) {
+            if (i < 10)
+            {
+                cbMonth.getItems().add("0"+String.valueOf(i));
+            }
+            else {
+                cbMonth.getItems().add(String.valueOf(i));
+            }
+
+        }
+
+
         cbYear.getItems().add("2022");
         cbYear.getItems().add("2023");
-
-        drawBarChart(16021, "2023-02-14");
 
 
 
     }
 
-
-
-    public void drawBarChart(Integer sid, String date) {
+    public void drawBarChart(String sid, String day, String month, String year) {
         BarChart<String, Number> barChart = new BarChart<>(new CategoryAxis(), new NumberAxis());
         barChart.getData().clear();
         chartPane.getChildren().clear();
+        String date = year + "-" + month + "-" + day;
         barChart.setTitle("Produktion i kWh for " + date + " for solcelle site " + sid);
         barChart.setPrefSize(700, 550);
         XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -163,7 +224,4 @@ public class HelloApplication extends Application {
             });
         }
     }
-
 }
-
-
