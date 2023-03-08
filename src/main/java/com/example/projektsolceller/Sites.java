@@ -51,7 +51,7 @@ public class Sites {
                     if (time.charAt(j) == 'T')
                     {
                         timeDate = time.substring(0, j);
-                        timeInHours = time.substring(j + 1);
+                        timeInHours = time.substring(j + 1,j+6);
                     }
                 }
                 sid = values[2];
