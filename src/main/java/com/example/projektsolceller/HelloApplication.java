@@ -177,7 +177,6 @@ public class HelloApplication extends Application {
             }
 
             if (cbDay.getSelectionModel().isEmpty()) {
-
                 totalProduction.setText(calcTotalProductionPrSite(cbSite.getSelectionModel().getSelectedItem(), cbMonth.getSelectionModel().getSelectedItem(),
                         cbYear.getSelectionModel().getSelectedItem()));
             }
@@ -185,6 +184,12 @@ public class HelloApplication extends Application {
             if (cbDay.getSelectionModel().isEmpty() && cbSite.getSelectionModel().isEmpty()) {
                 totalProduction.setText(calcTotalProductionForAllSites(cbMonth.getSelectionModel().getSelectedItem(),
                         cbYear.getSelectionModel().getSelectedItem()));
+
+                if (!lowestProduction.isSelected()) {
+                    peakAndLow.setText(showHighestProductionDay(cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem()));
+                }
+                else peakAndLow.setText(showLowestProductionDay(cbMonth.getSelectionModel().getSelectedItem(), cbYear.getSelectionModel().getSelectedItem())); // FIXME: Metoden skal laves. Det modsatte af den, der står ovenfor.
+
             }
         });
 
@@ -202,12 +207,12 @@ public class HelloApplication extends Application {
             totalProduction.clear();
             peakAndLow.clear();
             totalProduction.setPromptText("Samlet produktion i kW/h");
-            peakAndLow.setPromptText("Højeste/laveste produktionsdag");
+            peakAndLow.setPromptText("Højeste / laveste produktionsdag");
         });
 
         labelPeakAndLow.setWrapText(true);
 
-        peakAndLow.setPromptText("Højeste/laveste produktionsdag");
+        peakAndLow.setPromptText("Højeste / laveste produktionsdag");
         peakAndLow.setEditable(false);
         peakAndLow.setFocusTraversable(false);
         peakAndLow.setOnMousePressed(actionEvent -> {
@@ -359,66 +364,66 @@ public class HelloApplication extends Application {
         return totalProduction + " kWh";
     }
 
-    /*
     public String showHighestProductionDay(String month, String year) {
-        int maxProductionPerHour = 0;
         int tempMaxProductionPerDay = 0;
         int maxProductionPerDay = 0;
         String date = "";
 
-        // Adds all online data from 1 day, then stops.
-        for (int i = 1; i < solceller.Data.size(); i++) {
+        for (int i = 1; i < solceller.Data.size() - 1; i++) {
             if (Integer.parseInt(solceller.Data.get(i).getTimeDay())
-                    == Integer.parseInt(solceller.Data.get(i + 1).getTimeDay())) {
+                    == Integer.parseInt(solceller.Data.get(i + 1).getTimeDay())
+                    && solceller.Data.get(i).getTimeMonth().equals(month)) {
                 tempMaxProductionPerDay += Integer.parseInt(solceller.Data.get(i).getOnline());
             }
-        }
 
-        for (int i = 1; i < solceller.Data.size() ; i++) {
-            if (solceller.Data.get(i).getTimeMonth().equals(month)
-            && solceller.Data.get(i).getTimeYear().equals(year)
-            && (Integer.parseInt(solceller.Data.get(i).getOnline()) > maxProductionPerHour)) {
-                maxProductionPerHour = Integer.parseInt(solceller.Data.get(i).getOnline());
-
-            }
-        }
-
-        for (int i = 0; i < solceller.Data.size(); i++) {
-            if (solceller.Data.get(i).getOnline().equals(String.valueOf(maxProductionPerHour))) {
-                date = solceller.Data.get(i).getTimeDay();
-                date += "-" + solceller.Data.get(i).getTimeMonth();
-                date += "-" + solceller.Data.get(i).getTimeYear();
-                return date;
-            }
-        }
-
-
-        int tmp = 0;
-        for (int i = 0; i < solceller.Data.size(); i++)
-        {
-            if(solceller.Data.get(i).getOnline().equals("0"))
-            {
-
-            }
-            else
-            {
-                tmp = Integer.parseInt(tmp + solceller.Data.get(i).getOnline());
+            else if (Integer.parseInt(solceller.Data.get(i).getTimeDay())
+                    != Integer.parseInt(solceller.Data.get(i + 1).getTimeDay())
+                    && solceller.Data.get(i).getTimeMonth().equals(month)) {
+                tempMaxProductionPerDay += Integer.parseInt(solceller.Data.get(i).getOnline());
             }
 
-            return Integer.toString(tmp);
+            if (tempMaxProductionPerDay > maxProductionPerDay) {
+                maxProductionPerDay = tempMaxProductionPerDay;
+                date = solceller.Data.get(i).getTimeDay() + "-"
+                        + solceller.Data.get(i).getTimeMonth() + "-"
+                        + solceller.Data.get(i).getTimeYear();
+            }
         }
-
-
-
         return date;
     }
-     */
 
+    public String showLowestProductionDay(String month, String year) {
+        int tempMaxProductionPerDay = 0;
+        int minProductionPerDay = 0;
+        String date = "";
 
+        for (int i = 1; i < solceller.Data.size() - 1; i++) {
+            if (Integer.parseInt(solceller.Data.get(i).getTimeDay())
+                    == Integer.parseInt(solceller.Data.get(i + 1).getTimeDay())
+                    && solceller.Data.get(i).getTimeMonth().equals(month)) {
+                tempMaxProductionPerDay += Integer.parseInt(solceller.Data.get(i).getOnline());
+            }
 
+            else if (Integer.parseInt(solceller.Data.get(i).getTimeDay())
+                    != Integer.parseInt(solceller.Data.get(i + 1).getTimeDay())
+                    && solceller.Data.get(i).getTimeMonth().equals(month)) {
+                tempMaxProductionPerDay += Integer.parseInt(solceller.Data.get(i).getOnline());
+            }
 
+            if (minProductionPerDay == 0) {
+                minProductionPerDay = tempMaxProductionPerDay;
+                date = solceller.Data.get(i).getTimeDay() + "-"
+                        + solceller.Data.get(i).getTimeMonth() + "-"
+                        + solceller.Data.get(i).getTimeYear();
+            }
 
+            else if (tempMaxProductionPerDay < minProductionPerDay) {
+                minProductionPerDay = tempMaxProductionPerDay;
+                date = solceller.Data.get(i).getTimeDay() + "-"
+                        + solceller.Data.get(i).getTimeMonth() + "-"
+                        + solceller.Data.get(i).getTimeYear();
+            }
+        }
+        return date;
+    }
 }
-
-
-
