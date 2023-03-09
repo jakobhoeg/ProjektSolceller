@@ -47,7 +47,7 @@ public class HelloApplication extends Application {
     HBox buttonHBox = new HBox();
 
     VBox vbox = new VBox();
-    Label labelPeakAndLow = new Label("Det valgte sites samlede\nproduktion per måned:");
+    Label labelPeakAndLow = new Label("Den samlede produktion\nfor den valgte måned:");
     TextField peakAndLow = new TextField();
     TextField totalProduction = new TextField();
 
@@ -90,7 +90,7 @@ public class HelloApplication extends Application {
         gridPane.add(loginBtn, 0, 2);
 
         // Skips login
-        changeToMainScene();
+        //changeToMainScene();
 
         loginBtn.setPrefWidth(180);
         password.setOnAction(actionEvent -> {
@@ -199,6 +199,8 @@ public class HelloApplication extends Application {
             cbSite.getSelectionModel().clearSelection();
             //todo: choicebox
             lowestProduction.setSelected(false);
+            totalProduction.clear();
+            peakAndLow.clear();
             totalProduction.setPromptText("Samlet produktion i kW/h");
             peakAndLow.setPromptText("Højeste/laveste produktionsdag");
         });
@@ -357,6 +359,60 @@ public class HelloApplication extends Application {
         return Integer.toString(totalProduction);
     }
 
+    /*
+    public String showHighestProductionDay(String month, String year) {
+        int maxProductionPerHour = 0;
+        int tempMaxProductionPerDay = 0;
+        int maxProductionPerDay = 0;
+        String date = "";
+
+        // Adds all online data from 1 day, then stops.
+        for (int i = 1; i < solceller.Data.size(); i++) {
+            if (Integer.parseInt(solceller.Data.get(i).getTimeDay())
+                    == Integer.parseInt(solceller.Data.get(i + 1).getTimeDay())) {
+                tempMaxProductionPerDay += Integer.parseInt(solceller.Data.get(i).getOnline());
+            }
+        }
+
+        for (int i = 1; i < solceller.Data.size() ; i++) {
+            if (solceller.Data.get(i).getTimeMonth().equals(month)
+            && solceller.Data.get(i).getTimeYear().equals(year)
+            && (Integer.parseInt(solceller.Data.get(i).getOnline()) > maxProductionPerHour)) {
+                maxProductionPerHour = Integer.parseInt(solceller.Data.get(i).getOnline());
+
+            }
+        }
+
+        for (int i = 0; i < solceller.Data.size(); i++) {
+            if (solceller.Data.get(i).getOnline().equals(String.valueOf(maxProductionPerHour))) {
+                date = solceller.Data.get(i).getTimeDay();
+                date += "-" + solceller.Data.get(i).getTimeMonth();
+                date += "-" + solceller.Data.get(i).getTimeYear();
+                return date;
+            }
+        }
+
+
+        int tmp = 0;
+        for (int i = 0; i < solceller.Data.size(); i++)
+        {
+            if(solceller.Data.get(i).getOnline().equals("0"))
+            {
+
+            }
+            else
+            {
+                tmp = Integer.parseInt(tmp + solceller.Data.get(i).getOnline());
+            }
+
+            return Integer.toString(tmp);
+        }
+
+
+
+        return date;
+    }
+     */
 
 
 
