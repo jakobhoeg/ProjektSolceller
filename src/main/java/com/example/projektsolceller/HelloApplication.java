@@ -343,7 +343,7 @@ public class HelloApplication extends Application {
                 totalProduction += Integer.parseInt(solceller.Data.get(i).getOnline());
             }
         }
-        return Integer.toString(totalProduction);
+        return totalProduction + " kWh";
     }
 
     public String calcTotalProductionForAllSites(String month, String year)
@@ -356,7 +356,7 @@ public class HelloApplication extends Application {
                 totalProduction += Integer.parseInt(solceller.Data.get(i).getOnline());
             }
         }
-        return Integer.toString(totalProduction);
+        return totalProduction + " kWh";
     }
 
     /*
