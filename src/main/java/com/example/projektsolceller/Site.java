@@ -7,24 +7,10 @@ import java.util.ArrayList;
 
 public class Site {
 
-    private String timeDate;
     private String timeYear;
     private String timeMonth;
     private String timeDay;
     private String timeInHours;
-
-    public String getTimeYear() {
-        return timeYear;
-    }
-
-    public String getTimeMonth() {
-        return timeMonth;
-    }
-
-    public String getTimeDay() {
-        return timeDay;
-    }
-
     private String _id;
     private String time;
     private String sid;
@@ -32,8 +18,23 @@ public class Site {
     private String online;
     private String offline;
 
+    /**
+     * ArrayList which has Site as parameter, so it acts as an object.
+     */
     public ArrayList<Site> Data = new ArrayList<>();
 
+    /**
+     * Constructor for Site, which is used to add all data from tsv file to the ArrayList.
+     * @param _id
+     * @param timeYear
+     * @param timeMonth
+     * @param timeDay
+     * @param timeInHours
+     * @param sid
+     * @param total
+     * @param online
+     * @param offline
+     */
     public Site(String _id, String timeYear, String timeMonth, String timeDay,
                 String timeInHours, String sid, String total, String online, String offline) {
         this._id = _id;
@@ -47,9 +48,17 @@ public class Site {
         this.offline = offline;
     }
 
+    /**
+     * Empty constructor for Site - used in main to get a reference to the class.
+     */
     public Site() {
     }
 
+    /**
+     * Method for loading the tsv file and adding it to the ArrayList.
+     * @param file
+     * @return ArrayList<Site> Data with all data from tsv file.
+     */
     public ArrayList<Site> loadFile(File file) {
 
         try (BufferedReader TSVReader = new BufferedReader(new FileReader(file))) {
@@ -86,17 +95,23 @@ public class Site {
         return Data;
     }
 
-    public void printDataInConsole() {
-        for (int i = 0; i < Data.size(); i++) {
-            System.out.println(Data.get(i).getTimeMonth());
-        }
+
+    // region Getters
+    /**
+     * Getters for all variables in Site.
+     * @return
+     */
+    public String getTimeYear() {
+        return timeYear;
     }
 
-    // region Getters and Setters
-    public String getTimeDate() {
-        return timeDate;
+    public String getTimeMonth() {
+        return timeMonth;
     }
 
+    public String getTimeDay() {
+        return timeDay;
+    }
     public String getTimeInHours() {
         return timeInHours;
     }

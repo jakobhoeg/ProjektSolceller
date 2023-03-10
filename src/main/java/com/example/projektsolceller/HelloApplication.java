@@ -13,23 +13,30 @@ import java.io.File;
 import java.io.IOException;
 
 public class HelloApplication extends Application {
+    /**
+     * @param objectreferences for Site class to load data
+     */
     Site solceller = new Site();
+    File file = new File("Solcelle_data.tsv");
 
-    // Login Scene
+
+    /**
+     * @param variables for login screen
+     */
     Pane loginPane = new Pane();
     Pane mainScreen = new Pane();
     BorderPane borderPane = new BorderPane();
-    File file = new File("Solcelle_data.tsv");
     GridPane gridPane = new GridPane();
     TextField username = new TextField("");
     TextField password = new TextField("");
     Button loginBtn = new Button("Login");
     Label loginLabel = new Label("Aarhus Solcelleanlæg");
-
     Stage temporaryStage = null;
     Scene loginScene = new Scene(loginPane, 600, 500);
 
-    // Main scene
+    /**
+     * @param variables for main screen
+     */
     Scene mainScene = new Scene(mainScreen, 1000, 600);
     BorderPane mainPane = new BorderPane();
     VBox leftVbox = new VBox();
@@ -59,6 +66,7 @@ public class HelloApplication extends Application {
         temporaryStage = stage;
         loginScene.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
 
+        // Load data from file
         solceller.loadFile(file);
 
         stage.setTitle("Login");
@@ -89,9 +97,6 @@ public class HelloApplication extends Application {
         gridPane.add(password, 0, 1);
         gridPane.add(loginBtn, 0, 2);
 
-        // Skips login
-        //changeToMainScene();
-
         loginBtn.setPrefWidth(180);
         password.setOnAction(actionEvent -> {
             loginBtn.fire();
@@ -110,6 +115,12 @@ public class HelloApplication extends Application {
         launch();
     }
 
+    /**
+     * Changes scene to main screen after logging in
+     * Adds all the elements to the main screen
+     * Adds the stylesheet to the main screen
+     * Adds the bar chart to the main screen
+     */
     public void changeToMainScene() {
         temporaryStage.setTitle("Aarhus Solcelleanlæg");
         temporaryStage.setScene(mainScene);
@@ -151,8 +162,11 @@ public class HelloApplication extends Application {
         cbSite.setPrefWidth(120);
         searchBtn.setPrefWidth(120);
 
+        loadDataInComboboxes();
+
         choiceChartBox.getItems().addAll("Line chart", "Bar chart");
         choiceChartBox.setValue("Line chart");
+        // Choiccebox for choosing between bar chart and line chart - calls the drawChart method
         choiceChartBox.setOnAction(e -> {
             if (choiceChartBox.getValue().equals("Bar chart")) {
                 drawBarChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
@@ -167,6 +181,9 @@ public class HelloApplication extends Application {
 
         });
 
+        // Search button - calls drawChart method and if statements to check if
+        // the user has chosen a site, day, month or year - then calls
+        // according method (calcTotalProduction etc)
         searchBtn.setOnAction(actionEvent -> {
             if (choiceChartBox.getValue().equals("Bar chart")) {
                 drawBarChart(cbSite.getSelectionModel().getSelectedItem(), cbDay.getSelectionModel().getSelectedItem(),
@@ -193,6 +210,7 @@ public class HelloApplication extends Application {
             }
         });
 
+        // Clear button - clears all choiceboxes and textfields
         clearBtn.setOnAction(actionEvent -> {
             cbDay.getSelectionModel().clearSelection();
             cbDay.setPromptText("Dag");
@@ -227,6 +245,18 @@ public class HelloApplication extends Application {
 
         mainPane.setRight(chartPane);
 
+    }
+
+    /**
+     * Method for loading data into the comboboxes
+     * For loops for adding the days, months and years
+     */
+    public void loadDataInComboboxes()
+    {
+
+        cbYear.getItems().add("2022");
+        cbYear.getItems().add("2023");
+
         for (Site s : solceller.Data) {
             if (s == solceller.Data.get(0)) {
                 continue;
@@ -251,11 +281,15 @@ public class HelloApplication extends Application {
                 cbMonth.getItems().add(String.valueOf(i));
             }
         }
-
-        cbYear.getItems().add("2022");
-        cbYear.getItems().add("2023");
     }
 
+    /**
+     * Method for drawing a bar chart
+     * @param sid
+     * @param day
+     * @param month
+     * @param year
+     */
     public void drawBarChart(String sid, String day, String month, String year) {
         BarChart<String, Number> barChart = new BarChart<>(new CategoryAxis(), new NumberAxis());
         barChart.getData().clear();
@@ -297,6 +331,13 @@ public class HelloApplication extends Application {
         }
     }
 
+    /**
+     * Method for drawing a line chart
+     * @param sid
+     * @param day
+     * @param month
+     * @param year
+     */
     public void drawLineChart(String sid, String day, String month, String year) {
         LineChart<String, Number> lineChart = new LineChart<>(new CategoryAxis(), new NumberAxis());
         lineChart.getData().clear();
@@ -337,7 +378,13 @@ public class HelloApplication extends Application {
         }
     }
 
-
+    /**
+     * Method for calculating the total production for a specific site
+     * @param sid
+     * @param month
+     * @param year
+     * @return
+     */
     public String calcTotalProductionPrSite(String sid, String month, String year) {
         int totalProduction = 0;
 
@@ -351,6 +398,12 @@ public class HelloApplication extends Application {
         return totalProduction + " kWh";
     }
 
+    /**
+     * Method for calculating the total production for all sites
+     * @param month
+     * @param year
+     * @return
+     */
     public String calcTotalProductionForAllSites(String month, String year)
     {
         int totalProduction = 0;
@@ -364,6 +417,12 @@ public class HelloApplication extends Application {
         return totalProduction + " kWh";
     }
 
+    /**
+     * Method for calculating the highest production day for a specific month
+     * @param month
+     * @param year
+     * @return
+     */
     public String showHighestProductionDay(String month, String year) {
         int tempMaxProductionPerDay = 0;
         int maxProductionPerDay = 0;
@@ -392,6 +451,12 @@ public class HelloApplication extends Application {
         return date;
     }
 
+    /**
+     * Method for calculating the lowest production day for a specific month
+     * @param month
+     * @param year
+     * @return
+     */
     public String showLowestProductionDay(String month, String year) {
         int tempMaxProductionPerDay = 0;
         int minProductionPerDay = 0;
